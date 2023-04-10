@@ -22,7 +22,9 @@ class BaseJudge:
         self.mars = mars
         self.diff = Diff() if diff is None else diff
         self.id = randint(100000, 999999)
-        self.tmp_dir = tmp_dir = TmpDir(os.path.join(tmp_pre, str(self.id)))
+        tmp_path = os.path.join(tmp_pre, str(self.id))
+        self.tmp_dir = tmp_dir = TmpDir(tmp_path)
+        print("Current tmp file is " + str(tmp_path))
         for runner in runners:
             runner.set_tmp_dir(tmp_dir)
 
@@ -163,6 +165,7 @@ class MarsJudge(BaseJudge):
 
         print('Running simulation for', asm_path, '...')
         self.runner(out_path)
+        print("\nRegister write check...\n")
         self.diff(out_path, ans_path)
 
 
@@ -184,14 +187,19 @@ class DuetJudge(BaseJudge):
 
         self.mars(asm_path=asm_path, hex_path=hex_path, a=True)
         sync_path(hex_path, hex_std_path)
-
+        raw_out_path = os.path.join(out_path + '.raw.out')
+        raw_ans_path = os.path.join(ans_path + '.raw.ans')
         print('Running standard simulation for', asm_path, '...')
+        self.runner_std.raw_output_file = raw_ans_path
         self.runner_std(ans_path)
-
         print('Running simulation for', asm_path, '...')
+        self.runner.raw_output_file = raw_out_path
         self.runner(out_path)
 
+        print("\nRegister write check...\n")
         self.diff(out_path, ans_path)
+        print("\nOutput pin check...\n")
+        self.diff(raw_out_path, raw_ans_path)
 
 
 class DummyJudge(MarsJudge):

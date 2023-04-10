@@ -1,17 +1,20 @@
 import argparse
 from judge.logisim import *
 from judge.base import timeout_default
-from judge import Logisim, Mars, Diff, MarsJudge, INFINITE_LOOP, resolve_paths
-
+from judge import Logisim, Mars, Diff, MarsJudge, INFINITE_LOOP, resolve_paths, DuetJudge
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Verify MIPS CPU circuits in Logisim against MARS simulation of '
                                                  'given .asm program.')
     parser.add_argument('circuit_path',
                         help='path to the Logisim project file')
+    parser.add_argument('--std-circuit-path',
+                        default=None,
+                        help='path to the Standard Logisim project file')
     parser.add_argument('asm_path',
                         help='path to the .asm program to simulate, or a directory containing multiple .asm files')
-    parser.add_argument('logisim_path',
+    parser.add_argument('--logisim-path',
+                        default='judge/kits/logisim.jar',
                         help='path to the Logisim .jar file')
     parser.add_argument('--mars-path',
                         help='path to the modified MARS .jar file, the built-in one by default',
@@ -47,6 +50,8 @@ if __name__ == '__main__':
     parser.add_argument('--mars-timeout', metavar='secs', type=int,
                         default=None,
                         help='timeout for MARS simulation, {} by default'.format(timeout_default))
+    parser.add_argument('--permit-prefix', action='store_true',
+                        help='Whether permit prefix')
 
     args = parser.parse_args()
     logi = Logisim(args.circuit_path, args.logisim_path, args.java_path,
@@ -57,7 +62,18 @@ if __name__ == '__main__':
                    timeout=args.logisim_timeout
                    )
     mars = Mars(args.mars_path, java_path=args.java_path, timeout=args.mars_timeout)
-    diff = Diff(args.diff_path)
+    diff = Diff(args.diff_path, permit_prefix=args.permit_prefix)
 
-    judge = MarsJudge(logi, mars, diff)
+    if args.std_circuit_path:
+        std_logi = Logisim(args.std_circuit_path, args.logisim_path, args.java_path,
+                           args.pc_width, args.pc_by_word, args.pc_start,
+                           args.dm_address_width, args.dm_address_by_word,
+                           args.im_circuit_name,
+                           appendix=None if args.no_infinite_loop_appendix else INFINITE_LOOP,
+                           timeout=args.logisim_timeout
+                           )
+        judge = DuetJudge(logi, std_logi, mars)
+    else:
+        judge = MarsJudge(logi, mars, diff)
+
     judge.all(resolve_paths(args.asm_path))
