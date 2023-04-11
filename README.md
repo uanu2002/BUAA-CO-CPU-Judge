@@ -69,7 +69,7 @@ python logisim-judge.py Examples/cpu.circ --std-circuit-path Examples/std_cpu.ci
 
 **可能的问题**
 
-1.   由于Mars和电路的输出格式不同，所以默认对拍失败，如果只想比较每次的寄存器操作是否相同，可以在命令行执行`Check.bat`脚本。
+1.   由于Mars和电路的输出格式不同，所以默认对拍失败，如果只想比较每次的寄存器操作是否相同，可以在命令行执行`Check.sh`脚本。
 
 2.   电路和电路比较时会先比较所有的寄存器操作，然后再比较所有的输出引脚（更全面），分别输出对拍结果。
 

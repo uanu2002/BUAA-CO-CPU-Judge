@@ -69,7 +69,7 @@ Each run will save project files (circuit diagram, machine code, IM image, etc.)
 
 **Possible Issues**
 
-1.  Due to the different output formats of Mars and circuit, default matching fails. If only the similarity between register operations is compared, you can execute the `Check.bat` script on the command line.
+1.  Due to the different output formats of Mars and circuit, default matching fails. If only the similarity between register operations is compared, you can execute the `Check.sh` script on the command line.
 
 2.  When comparing the circuit with another circuit, all register operations are compared first, followed by all output pins (more comprehensive), and the matching results are output separately.
 
