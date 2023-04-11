@@ -20,6 +20,8 @@ This is inspired by [karin0/buaa-co-cpu-judge](https://github.com/karin0/buaa-co
 
 ## 用法
 
+环境：Java17 + Python3.7
+
 ### 命令行CLI
 
 **简单来说**，只需要**编写MIPS代码**并将Examples文件夹中文件的**路径修改**为自己的即可。
@@ -85,7 +87,7 @@ python logisim-judge.py Examples/cpu.circ --std-circuit-path Examples/std_cpu.ci
      1/1 xxx.asm ok
      ```
 
-     
+4.   运行时默认使用环境变量中的Java，如果版本过低可以下载高版本Java后在命令最后增加`--java-path "你的Java路径"`或修改环境变量
 
 ----
 
